@@ -12,11 +12,23 @@ let getSpendings customer =
     else (customer, 80.0)
 
 let increaseCredit condition customer =
-    if condition customer then { customer with Credit = customer.Credit + 100.0 }
-    else { customer with Credit = customer.Credit + 50.0 }
+    if condition customer then { customer with Credit = customer.Credit + 100.0<USD> }
+    else { customer with Credit = customer.Credit + 50.0<USD> }
 
 let vipCondition customer = customer.IsVip
 
 let increaseCreditUsingVip = increaseCredit vipCondition
 
 let upgradeCustomer = getSpendings >> tryPromoteToVip >> increaseCreditUsingVip
+
+let isAdult customer =
+    match customer.PersonalDetails with
+        | None -> false
+        | Some d -> d.DateOfBirth.AddYears 18 <= DateTime.Now.Date
+
+
+let getAlert customer =
+    match customer.Notifications with
+    | ReceiveNotifications(receiveDeals =_; receiveAlerts = truee ) ->
+        Some (sprintf "Alert for customer: %i" customer.Id)
+        | _ -> None
